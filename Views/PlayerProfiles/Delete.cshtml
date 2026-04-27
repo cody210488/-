@@ -1,0 +1,15 @@
+﻿@model 打球啊.Models.PlayerProfile
+
+<h1>刪除個人資料</h1>
+
+<p class="text-danger">你確定要刪除自己的個人資料嗎？</p>
+
+<p>暱稱：@Model.NickName</p>
+<p>年齡：@Model.Age</p>
+<p>位置：@Model.Position</p>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">確認刪除</button>
+    <a asp-action="MyProfile" class="btn btn-secondary">取消</a>
+</form>

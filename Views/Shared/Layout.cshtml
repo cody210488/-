@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - 打球啊</title>
+
+
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+
+</head>
+<body class="bg-light">
+
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+
+            <!-- Logo -->
+            <a class="navbar-brand fw-bold"
+               asp-area=""
+               asp-controller="Home"
+               asp-action="Index">打球啊</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+
+                <!-- 左側選單 -->
+                <ul class="navbar-nav me-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-area=""
+                           asp-controller="Home"
+                           asp-action="Index">首頁</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-area=""
+                           asp-controller="Courts"
+                           asp-action="Index">球場</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-area=""
+                           asp-controller="Events"
+                           asp-action="Index">活動</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-area=""
+                           asp-controller="Events"
+                           asp-action="MyEvents">我的活動</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-area=""
+                           asp-controller="PlayerProfiles"
+                           asp-action="MyProfile">我的資料</a>
+                    </li>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-warning fw-bold"
+                                   asp-area="Admin"
+                                   asp-controller="Courts"
+                                   asp-action="Index">
+                                    後台管理
+                                </a>
+                            </li>
+                        }
+
+                </ul>
+
+                <!-- 右側登入區 -->
+                <ul class="navbar-nav align-items-lg-center">
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-white-50">
+                                    你好，@User.Identity.Name
+                                </span>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   href="#"
+                                   role="button"
+                                   data-bs-toggle="dropdown">
+                                    @User.Identity.Name
+                                </a>
+
+                                <ul class="dropdown-menu dropdown-menu-end">
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-area="Identity"
+                                           asp-page="/Account/Manage/Index">
+                                            帳號設定
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-area="Identity"
+                                           asp-page="/Account/Manage/ChangePassword">
+                                            修改密碼
+                                        </a>
+                                    </li>
+
+                                    <li><hr class="dropdown-divider" /></li>
+
+                                    <li>
+                                        <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item">登出</button>
+                                        </form>
+                                    </li>
+
+                                </ul>
+                            </li>
+
+                            <li class="nav-item">
+                                <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-light btn-sm ms-lg-2">
+                                        登出
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-area="Identity"
+                                   asp-page="/Account/Login">登入</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="btn btn-warning btn-sm ms-lg-2"
+                                   asp-area="Identity"
+                                   asp-page="/Account/Register">註冊</a>
+                            </li>
+                        }
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container py-4">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-info shadow-sm">
+                @TempData["Message"]
+            </div>
+        }
+
+        @RenderBody()
+</main>
+
+<footer class="border-top bg-white py-3 mt-4">
+    <div class="container text-muted small">
+        &copy; @DateTime.Now.Year 打球啊 - 籃球揪團平台
+    </div>
+</footer>
+
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+
+</body>
+</html>

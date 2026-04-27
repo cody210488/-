@@ -1,0 +1,46 @@
+﻿@page
+@model RegisterConfirmationModel
+
+@{
+    ViewData["Title"] = "註冊完成";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+
+        <div class="content-card text-center">
+
+            <h2 class="fw-bold mb-3 text-success">註冊成功 🎉</h2>
+
+            @if (Model.DisplayConfirmAccountLink)
+            {
+                <p class="text-muted mb-3">
+                    （開發模式）目前尚未設定 Email 發送服務，
+                    請點擊下方連結完成帳號驗證：
+                </p>
+
+                <a id="confirm-link"
+                   href="@Model.EmailConfirmationUrl"
+                   class="btn btn-success w-100 mb-3">
+                    確認帳號
+                </a>
+
+                <div class="text-muted small">
+                    ⚠️ 正式上線時，這個連結會寄到使用者 Email
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-4">
+                    我們已寄送驗證信到你的 Email，請前往信箱點擊連結完成註冊。
+                </p>
+            }
+
+            <a asp-page="./Login" class="btn btn-outline-primary w-100 mt-3">
+                前往登入
+            </a>
+
+        </div>
+
+    </div>
+</div>

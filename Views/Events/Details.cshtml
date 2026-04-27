@@ -1,0 +1,303 @@
+﻿@model 打球啊.ViewModel.EventDetailsViewModel
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using System.Security.Claims
+@{
+    var messages = ViewBag.Messages as List<打球啊.ViewModel.EventMessageViewModel>
+                   ?? new List<打球啊.ViewModel.EventMessageViewModel>();
+}
+@functions {
+    public string GetDisplayName(Enum enumValue)
+    {
+        var member = enumValue.GetType().GetMember(enumValue.ToString()).FirstOrDefault();
+        if (member != null)
+        {
+            var displayAttr = member.GetCustomAttribute<DisplayAttribute>();
+            if (displayAttr != null)
+            {
+                return displayAttr.Name ?? enumValue.ToString();
+            }
+        }
+        return enumValue.ToString();
+    }
+}
+
+<h2>@Model.Title</h2>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["Message"]
+    </div>
+}
+
+<p>日期 : @Model.EventDate.ToString("yyyy/MM/dd")</p>
+<p>開始時間 : @Model.StartTime.ToString(@"hh\:mm")</p>
+<p>結束時間 : @Model.EndTime.ToString(@"hh\:mm")</p>
+<p>球場 : @Model.CourtName</p>
+<p>發起人 : @Model.OrganizerName</p>
+<p>程度限制 : @GetDisplayName(Model.SkillLevel)</p>
+<p>人數 : @Model.CurrentParticipants / @Model.MaxParticipants</p>
+<p>備註 : @(string.IsNullOrWhiteSpace(Model.Description) ? "無" : Model.Description)</p>
+
+@if (Model.IsFull)
+{
+    <p class="text-danger">人數已滿</p>
+}
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    if (Model.IsOrganizer)
+    {
+        <p class="text-muted">你是活動發起人</p>
+    }
+    else if (Model.IsJoined)
+    {
+        <p class="text-success">你已報名此活動</p>
+
+        <form asp-action="CancelJoin" method="post" class="mt-2">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="eventId" value="@Model.Id"/>
+            <button type="submit" class="btn btn-outline-danger">取消報名</button>
+        </form>
+    }
+    else if (!Model.IsFull)
+    {
+        <form asp-action="Join" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="eventId" value="@Model.Id" />
+            <button type="submit" class="btn btn-success">報名</button>
+        </form>
+    }
+}
+else
+{
+    <p class="text-muted">請先登入後再報名活動</p>
+}
+
+@{
+    var participants = ViewBag.Participants as List<打球啊.ViewModel.EventParticipantViewModel>
+                       ?? new List<打球啊.ViewModel.EventParticipantViewModel>();
+}
+
+<div class="content-card mt-4">
+    <h3 class="section-title">參加者 (@participants.Count 人)</h3>
+
+    @if (!participants.Any())
+    {
+        <p class="text-muted">目前還沒有人報名</p>
+    }
+    else
+    {
+        @foreach (var p in participants)
+        {
+            <div class="d-flex align-items-center mb-3 justify-content-between border rounded p-2">
+
+                <div class="d-flex align-items-center">
+                    <img src="@(string.IsNullOrEmpty(p.Photo) ? "/images/default.png" : p.Photo)"
+                         width="45"
+                         height="45"
+                         class="rounded-circle me-3" />
+
+                    <div>
+                        <div><strong>@p.NickName</strong></div>
+                        <div class="text-muted small">
+                            年齡：@p.Age ｜ 程度：@GetDisplayName(p.SkillLevel)
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.IsOrganizer && p.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+                {
+                    <form action="@Url.Action("RemoveParticipant","Events")" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="eventId" value="@Model.Id" />
+                        <input type="hidden" name="userId" value="@p.UserId" />
+
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('確定要移除此參加者嗎？')">
+                            移除
+                        </button>
+                    </form>
+                }
+            </div>
+        }
+        
+    }
+</div>
+@if (Model.IsOrganizer)
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">編輯活動</a>
+}
+<p class="mt-3">
+    <button type="button" class="btn btn-secondary" onclick="history.back()">回到前頁</button>
+</p>
+<div class="content-card mt-4">
+    <h3 class="section-title">活動留言區</h3>
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <form id="chatForm" asp-action="AddMessage" method="post" class="mb-4">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="eventId" value="@Model.Id" />
+
+            <div class="mb-2">
+                <textarea id="messageInput"
+                          name="message"
+                          class="form-control"
+                          rows="3"
+                          placeholder="想對大家說些什麼？"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">送出留言</button>
+        </form>
+    }
+    else
+    {
+        <p class="text-muted">登入後才能留言</p>
+    }
+
+    <div id="messageEmptyText" class="@(messages.Any() ? "d-none" : "")">
+        <p class="empty-text">目前還沒有留言</p>
+    </div>
+
+    <div id="messageList">
+        @foreach (var m in messages)
+        {
+            <div class="border rounded p-3 mb-3 d-flex align-items-start">
+                <img src="@(string.IsNullOrEmpty(m.Photo) ? "/images/default.png" : m.Photo)"
+                     width="48"
+                     height="48"
+                     class="rounded-circle me-3" />
+
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@m.NickName</strong>
+                            @if (User.Identity != null && User.Identity.IsAuthenticated &&
+                           m.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                            {
+                                <span class="badge bg-primary ms-2">你</span>
+                            }
+                        </div>
+
+                        <small class="text-muted">
+                            @m.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                        </small>
+                    </div>
+
+                    <p class="mb-2 mt-2">@m.Message</p>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated &&
+                   m.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    {
+                        <form action="@Url.Action("DeleteMessage", "Events")" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@m.Id" />
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('確定要刪除這則留言嗎？')">
+                                刪除
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+
+    <script>
+        const eventId = "@Model.Id";
+        const currentUserId = "@User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier)";
+        const messageList = document.getElementById("messageList");
+        const chatForm = document.getElementById("chatForm");
+        const messageInput = document.getElementById("messageInput");
+        const emptyText = document.getElementById("messageEmptyText");
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/eventChatHub")
+            .build();
+
+        connection.on("ReceiveMessage", function (msg) {
+            const isMine = currentUserId && msg.userId === currentUserId;
+            if (emptyText) {
+                emptyText.classList.add("d-none");
+            }
+            const html = `
+                <div class="border rounded p-3 mb-3 d-flex align-items-start">
+                    <img src="${msg.photo || '/images/default.png'}"
+                         width="48"
+                         height="48"
+                         class="rounded-circle me-3" />
+
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${msg.nickName}</strong>
+                                ${isMine ? '<span class="badge bg-primary ms-2">你</span>' : ''}
+                            </div>
+                            <small class="text-muted">${msg.createdAt}</small>
+                        </div>
+
+                        <p class="mb-2 mt-2">${msg.message}</p>
+                    </div>
+                </div>
+            `;
+
+            messageList.insertAdjacentHTML("beforeend", html);
+        });
+
+        async function startConnection() {
+            try {
+                await connection.start();
+                await connection.invoke("JoinEventGroup", eventId);
+            } catch (err) {
+                console.error(err);
+                setTimeout(startConnection, 3000);
+            }
+        }
+
+        startConnection();
+
+        if (chatForm) {
+            chatForm.addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(chatForm);
+                const message = formData.get("message");
+
+                if (!message || !message.toString().trim()) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(chatForm.action, {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        messageInput.value = "";
+                    } else {
+                        alert("留言失敗");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("留言失敗");
+                }
+            });
+        }
+
+        window.addEventListener("beforeunload", async function () {
+            if (connection.state === signalR.HubConnectionState.Connected) {
+                try {
+                    await connection.invoke("LeaveEventGroup", eventId);
+                } catch {}
+            }
+        });
+    </script>
+}

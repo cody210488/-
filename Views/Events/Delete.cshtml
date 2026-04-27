@@ -1,0 +1,16 @@
+﻿
+@model 打球啊.Models.Event
+
+<h2>刪除活動</h2>
+
+<p class="text-danger">確定要刪除這個活動嗎?</p>
+
+<p>名稱 : @Model.Title</p>
+<p>日期 : @Model.EventDate</p>
+<p>球場 : @Model.Court?.Name</p>
+
+<form asp-action="Delete" method="post">
+	@Html.AntiForgeryToken()
+	<button type="submit" class="btn btn-danger">確認刪除</button>
+	<a asp-action="MyEvents" class="btn btn-secondary">取消</a>
+</form>

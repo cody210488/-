@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "首頁";
+}
+
+<div class="hero-box">
+    <h1 class="fw-bold">歡迎來到打球啊</h1>
+    <p class="mb-0">以球場為入口的籃球揪團平台，快速找場、找人、找活動。</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="content-card h-100">
+            <div class="section-title">找球場</div>
+            <p>瀏覽各地球場資訊，查看場地與活動。</p>
+            <a asp-controller="Courts" asp-action="Index" class="btn btn-dark">前往球場</a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="content-card h-100">
+            <div class="section-title">找活動</div>
+            <p>查看目前可報名的籃球活動與揪團資訊。</p>
+            <a asp-controller="Events" asp-action="Index" class="btn btn-primary">前往活動</a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="content-card h-100">
+            <div class="section-title">我的資料</div>
+            <p>建立你的球員資料，讓別人更認識你。</p>
+            <a asp-controller="PlayerProfiles" asp-action="MyProfile" class="btn btn-success">前往個人資料</a>
+        </div>
+    </div>
+</div>

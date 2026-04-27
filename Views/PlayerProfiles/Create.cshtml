@@ -1,0 +1,76 @@
+﻿@model 打球啊.Models.PlayerProfile
+
+@{
+    ViewData["Title"] = "建立個人資料";
+}
+
+<h1>建立個人資料</h1>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="NickName" class="form-label">暱稱</label>
+        <input asp-for="NickName" class="form-control" />
+        <span asp-validation-for="NickName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Age" class="form-label">年齡</label>
+        <input asp-for="Age" class="form-control" />
+        <span asp-validation-for="Age" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Height" class="form-label">身高</label>
+        <input asp-for="Height" class="form-control" />
+        <span asp-validation-for="Height" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Weight" class="form-label">體重</label>
+        <input asp-for="Weight" class="form-control" />
+        <span asp-validation-for="Weight" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Position" class="form-label">位置</label>
+        <input asp-for="Position" class="form-control" />
+        <span asp-validation-for="Position" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Skill" class="form-label">技術特色</label>
+        <input asp-for="Skill" class="form-control" />
+        <span asp-validation-for="Skill" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SkillLevel" class="form-label">程度</label>
+        <select asp-for="SkillLevel" asp-items="Html.GetEnumSelectList<打球啊.Models.SkillLevel>()" class="form-select"></select>
+        <span asp-validation-for="SkillLevel" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Introduction" class="form-label">自我介紹</label>
+        <textarea asp-for="Introduction" class="form-control"></textarea>
+        <span asp-validation-for="Introduction" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">頭像</label>
+        <input type="file" name="photoFile" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">建立</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">返回首頁</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

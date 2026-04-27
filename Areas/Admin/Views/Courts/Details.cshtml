@@ -1,0 +1,124 @@
+﻿@model 打球啊.Models.Court
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "球場詳細資料";
+    var comments = ViewBag.Comments as List<打球啊.ViewModel.CourtCommentViewModel>
+               ?? new List<打球啊.ViewModel.CourtCommentViewModel>();
+}
+
+<h1 class="page-title">球場詳細資料</h1>
+<p>@Url.Action("DeleteComment", "Courts")</p>
+<div class="content-card">
+    <p><span class="info-label">名稱：</span>@Model.Name</p>
+    <p><span class="info-label">城市：</span>@Model.City</p>
+    <p><span class="info-label">地區：</span>@Model.District</p>
+    <p><span class="info-label">地址：</span>@Model.Address</p>
+    <p><span class="info-label">球場類型：</span>@Model.CourtType</p>
+    <p><span class="info-label">燈光：</span>@(Model.HasLighting ? "有" : "無")</p>
+    <p><span class="info-label">備註：</span>@Model.Description</p>
+</div>
+<div class="content-card">
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <a asp-controller="Events"
+           asp-action="ByCourt"
+           asp-route-courtId="@Model.Id"
+           class="btn btn-success">
+            查看此球場揪團活動
+        </a>
+    }
+    else
+    {
+        <p class="text-muted">登入後可查看此球場的揪團活動並加入</p>
+    }
+
+    <div class="mt-3">
+        <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3 class="section-title">留言</h3>
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <form asp-action="AddComment" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="courtId" value="@Model.Id" />
+
+            <div class="mb-2">
+                <textarea name="content" class="form-control" placeholder="寫點評論吧"></textarea>
+            </div>
+
+            <div class="mb-2">
+                <select name="rating" class="form-select">
+                    <option value="5">⭐⭐⭐⭐⭐</option>
+                    <option value="4">⭐⭐⭐⭐</option>
+                    <option value="3">⭐⭐⭐</option>
+                    <option value="2">⭐⭐</option>
+                    <option value="1">⭐</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">送出</button>
+        </form>
+    }
+    else
+    {
+        <p class="text-muted">登入後才能留言與評分</p>
+    }
+</div>
+
+<div class="content-card">
+    <h3 class="section-title">評論</h3>
+
+    @if (!comments.Any())
+    {
+        <p class="empty-text">目前還沒有評論</p>
+    }
+    else
+    {
+
+
+        @foreach (var c in comments)
+        {
+            <div class="border rounded p-3 mb-3 d-flex align-items-start">
+
+                <img src="@(string.IsNullOrEmpty(c.Photo) ? "/images/default.png" : c.Photo)"
+                     width="50"
+                     height="50"
+                     class="rounded-circle me-3" />
+
+                <div class="flex-grow-1">
+                    <strong>@c.NickName</strong>
+
+                    <div>⭐ @c.Rating</div>
+
+                    <p class="mb-1">@c.Content</p>
+
+                    <small class="text-muted">
+                        @c.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                    </small>
+
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated &&
+                   c.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    {
+                        <form action="@Url.Action("DeleteComment", "Courts")" method="post" class="mt-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@c.Id" />
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('確定要刪除這則評論嗎？')">
+                                刪除
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+

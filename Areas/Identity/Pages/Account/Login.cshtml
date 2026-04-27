@@ -1,0 +1,53 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "登入";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+
+        <div class="content-card">
+
+            <h2 class="text-center mb-4 fw-bold">登入帳號</h2>
+
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Email" class="form-label">Email</label>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Password" class="form-label">密碼</label>
+                    <input asp-for="Input.Password" type="password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="Input.RememberMe" class="form-check-input" />
+                    <label asp-for="Input.RememberMe" class="form-check-label">記住我</label>
+                </div>
+
+                <button type="submit" class="btn btn-dark w-100">登入</button>
+
+                <div class="text-center mt-3">
+                    <a asp-page="./ForgotPassword">忘記密碼？</a>
+                </div>
+
+                <div class="text-center mt-2">
+                    <a asp-page="./Register">還沒有帳號？註冊</a>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

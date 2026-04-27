@@ -1,0 +1,104 @@
+﻿@model 打球啊.ViewModel.MyEventsViewModel
+
+<h2>我的活動</h2>
+
+<hr />
+
+<h3>我建立的活動</h3>
+
+@if (!Model.CreatedEvents.Any())
+{
+    <p>尚未建立任何活動</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>名稱</th>
+                <th>日期</th>
+                <th>人數</th>
+                <th>狀態</th>
+                <th>功能</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CreatedEvents)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.EventDate.ToString("yyyy/MM/dd")</td>
+                    <td>@item.CurrentCount / @item.MaxPlayers</td>
+                    <td>
+                        @if (item.IsFull)
+                        {
+                            <span class="text-danger">已滿</span>
+                        }
+                        else
+                        {
+                            <span class="text-success">開放</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">查看</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">編輯</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">刪除</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<h3>我報名的活動</h3>
+
+@if (!Model.JoinedEvents.Any())
+{
+    <p>尚未報名任何活動</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>名稱</th>
+                <th>球場</th>
+                <th>日期</th>
+                <th>人數</th>
+                <th>狀態</th>
+                <th>功能</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.JoinedEvents)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.CourtName</td>
+                    <td>@item.EventDate.ToString("yyyy/MM/dd")</td>
+                    <td>@item.CurrentCount / @item.MaxPlayers</td>
+                    <td>
+                        @if (item.IsFull)
+                        {
+                            <span class="text-danger">已滿</span>
+                        }
+                        else
+                        {
+                            <span class="text-success">開放</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">查看</a>
+
+                        <form asp-action="CancelJoin" method="post" style="display:inline">
+                            <input type="hidden" name="eventId" value="@item.Id" />
+                            <button class="btn btn-sm btn-danger">取消報名</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

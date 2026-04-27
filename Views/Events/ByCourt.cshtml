@@ -1,0 +1,64 @@
+﻿@model IEnumerable<打球啊.Models.Event>
+@{
+	ViewData["Title"] = "球場活動列表";
+}
+
+<h1>@ViewBag.CourtName 的揪團活動</h1>
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+	<p>
+		<a asp-action="Create"
+		asp-route-courtId="@ViewBag.CourtId"
+		class="btn btn-success">在此球場發起活動</a>
+	</p>
+}
+else
+{
+	<p class="text-muted">登入後可在此球場發起活動或加入活動</p>
+}
+
+@if (!Model.Any())
+{
+	<p> 目前該球場無任何活動</p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>活動名稱</th>
+				<th>日期</th>
+				<th>開始時間</th>
+				<th>結束時間</th>
+				<th>目前人數</th>
+				<th>最大人數</th>
+				<th>功能</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach(var item in Model)
+			{
+				<tr>
+					<td>@item.Title</td>
+					<td>@item.EventDate.ToString("yyyy/MM/dd")</td>
+					<td>@item.StartTime</td>
+					<td>@item.EndTime</td>
+					<td>@item.Participants.Count</td>
+					<td>@item.MaxPlayers</td>
+					<td>
+						<a asp-action="Details"
+							asp-route-id="@item.Id"
+							class="btn btn-primary btn-sm">查看活動</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+<p>
+	<a asp-controller="Courts"
+		asp-action="Details"
+		asp-route-id="@ViewBag.CourtId"
+	class="btn btn-secondary">返回球場資訊</a>
+</p>

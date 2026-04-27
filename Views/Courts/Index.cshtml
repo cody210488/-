@@ -1,0 +1,150 @@
+﻿@model IEnumerable<打球啊.Models.Court>
+@{
+	ViewData["Title"] = "球場列表";
+}
+
+<h1>球場列表</h1>
+@if (User.IsInRole("Admin"))
+{
+	<a asp-area="Admin" asp-controller="Courts" asp-action="Index" class="btn btn-warning">
+		進入球場管理後台
+	</a>
+}
+
+<form method="get" class="mb-4">
+
+	<!-- 第一排：關鍵字搜尋 -->
+	<div class="row mb-2">
+		<div class="col-md-6">
+			<input type="text"
+				   name="searchKeyword"
+				   value="@ViewBag.SearchKeyword"
+				   class="form-control"
+				   placeholder="搜尋名稱或地址" />
+		</div>
+	</div>
+
+	<!-- 第二排：城市 + 地區 + 按鈕 -->
+	<div class="row g-2 mb-2">
+		<div class="col-md-3">
+			<select name="searchCity" id="searchCitySelect" class="form-select">
+				<option value="">請選擇城市</option>
+			</select>
+		</div>
+
+		<div class="col-md-3">
+			<select name="searchDistrict" id="searchDistrictSelect" class="form-select">
+				<option value="">請選擇地區</option>
+			</select>
+		</div>
+
+		<div class="col-md-3 d-flex">
+			<button type="submit" class="btn btn-primary me-2">搜尋</button>
+			<a asp-action="Index" class="btn btn-secondary">清除</a>
+		</div>
+	</div>
+
+	<!-- 第三排：checkbox -->
+	<div class="form-check">
+		<input type="checkbox"
+			   name="hasLighting"
+			   value="true"
+			   class="form-check-input"
+		@(ViewBag.HasLighting == true ? "checked" : "") />
+		<label class="form-check-label">只顯示有燈光</label>
+	</div>
+
+</form>
+
+@* <p> *@
+@* 	<a asp-action="Create" class="btn btn-primary">新增球場</a> *@
+@* </p> *@
+<table class="table">
+	
+
+	<thead>
+		<tr>
+			<th>名稱</th>
+			<th>城市</th>
+			<th>地區</th>
+			<th>地址</th>
+			<th>球場類型</th>
+			<th>燈光</th>
+			<th>描述</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach(var item in Model)
+		{
+			<tr>
+				<td>@item.Name</td>
+				<td>@item.City</td>
+				<td>@item.District</td>
+				<td>@item.Address</td>
+				<td>@item.CourtType</td>
+				<td>@(item.HasLighting? "有":"無")</td>
+				<td>@item.Description</td>
+				<td><a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">詳細</a></td>
+				@* <td><a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">修改</a></td> *@
+				@* <td><a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">刪除</a></td> *@
+			</tr>
+		}
+	</tbody>
+</table>
+	<script>
+		const taiwanCities = [
+			"台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市",
+			"基隆市", "新竹市", "嘉義市",
+			"新竹縣", "苗栗縣", "彰化縣", "南投縣", "雲林縣", "嘉義縣",
+			"屏東縣", "宜蘭縣", "花蓮縣", "台東縣", "澎湖縣", "金門縣", "連江縣"
+		];
+
+		const citySelect = document.getElementById("searchCitySelect");
+		const districtSelect = document.getElementById("searchDistrictSelect");
+
+		const selectedCity = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((ViewBag.SearchCity ?? "").ToString()));
+		const selectedDistrict = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((ViewBag.SearchDistrict ?? "").ToString()));
+
+		// 建立城市選單
+		for (const city of taiwanCities) {
+			const option = document.createElement("option");
+			option.value = city;
+			option.text = city;
+			citySelect.appendChild(option);
+		}
+
+		// 帶回原本查詢的城市
+		citySelect.value = selectedCity;
+
+		function loadDistricts(city, selectedDistrictValue = "") {
+			districtSelect.innerHTML = '<option value="">請選擇地區</option>';
+
+			if (!city) {
+				return;
+			}
+
+			fetch(`/Courts/GetDistricts?city=${encodeURIComponent(city)}`)
+				.then(response => response.json())
+				.then(data => {
+					for (const district of data) {
+						const option = document.createElement("option");
+						option.value = district;
+						option.text = district;
+						districtSelect.appendChild(option);
+					}
+
+					districtSelect.value = selectedDistrictValue;
+				})
+				.catch(error => {
+					console.error("載入地區失敗", error);
+				});
+		}
+
+		// 頁面載入時先載入原本查詢的地區
+		loadDistricts(selectedCity, selectedDistrict);
+
+		// 城市改變時重新載入地區
+		citySelect.addEventListener("change", function () {
+			loadDistricts(this.value);
+		});
+	</script>

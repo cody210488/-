@@ -1,0 +1,49 @@
+﻿@model 打球啊.Models.PlayerProfile
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+
+@functions {
+    public string GetDisplayName(Enum enumValue)
+    {
+        var member = enumValue.GetType().GetMember(enumValue.ToString()).FirstOrDefault();
+        if (member != null)
+        {
+            var displayAttr = member.GetCustomAttribute<DisplayAttribute>();
+            if (displayAttr != null)
+            {
+                return displayAttr.Name ?? enumValue.ToString();
+            }
+        }
+        return enumValue.ToString();
+    }
+}
+
+<h1>我的個人資料</h1>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["Message"]
+    </div>
+}
+@if (!string.IsNullOrEmpty(Model.Photo))
+{
+    <img src="@Model.Photo" asp-append-version="true" width="150" class="rounded-circle" />
+}
+else
+{
+    <img src="~/images/default.png" width="150" class="rounded-circle" />
+}<p>暱稱：@Model.NickName</p>
+<p>年齡：@Model.Age</p>
+<p>身高：@Model.Height cm</p>
+<p>體重：@Model.Weight kg</p>
+<p>位置：@Model.Position</p>
+<p>技術特色：@Model.Skill</p>
+<p>程度：@GetDisplayName(Model.SkillLevel)</p>
+<p>自我介紹：@(string.IsNullOrWhiteSpace(Model.Introduction) ? "無" : Model.Introduction)</p>
+
+
+<p>
+    <a asp-action="Edit" class="btn btn-warning">編輯個人資料</a>
+    <a asp-action="Delete" class="btn btn-danger">刪除個人資料</a>
+</p>

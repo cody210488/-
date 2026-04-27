@@ -1,0 +1,72 @@
+﻿@model 打球啊.Models.Event
+
+@{
+    ViewData["Title"] = "新增活動";
+}
+
+<h1>新增活動</h1>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">活動名稱</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CourtId" class="form-label">球場</label>
+        <select asp-for="CourtId" asp-items="ViewBag.CourtList" class="form-select">
+            <option value="">請選擇球場</option>
+        </select>
+        <span asp-validation-for="CourtId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EventDate" class="form-label">活動日期</label>
+        <input asp-for="EventDate" type="date" class="form-control" />
+        <span asp-validation-for="EventDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartTime" class="form-label">開始時間</label>
+        <input asp-for="StartTime" type="time" class="form-control" />
+        <span asp-validation-for="StartTime" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EndTime" class="form-label">結束時間</label>
+        <input asp-for="EndTime" type="time" class="form-control" />
+        <span asp-validation-for="EndTime" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MaxPlayers" class="form-label">最大人數</label>
+        <input asp-for="MaxPlayers" class="form-control" />
+        <span asp-validation-for="MaxPlayers" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SkillLevel" class="form-label">程度限制</label>
+        <select asp-for="SkillLevel" class="form-select" asp-items="Html.GetEnumSelectList<SkillLevel>()">
+            <option value="">請選擇程度</option>
+        </select>
+        <span asp-validation-for="SkillLevel" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">活動備註</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">建立活動</button>
+    <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

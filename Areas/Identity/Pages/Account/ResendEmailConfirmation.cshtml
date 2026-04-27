@@ -1,0 +1,45 @@
+﻿@page
+@model ResendEmailConfirmationModel
+
+@{
+    ViewData["Title"] = "重新寄送驗證信";
+}
+
+<h1 class="page-title text-center">重新寄送驗證信</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+
+        <div class="content-card">
+
+            <p class="text-muted text-center mb-4">
+                請輸入你的 Email，我們會重新寄送帳號驗證信。
+            </p>
+
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger mb-3" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Input.Email" class="form-label">Email</label>
+                    <input asp-for="Input.Email"
+                           class="form-control"
+                           aria-required="true"
+                           placeholder="name@example.com" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">重新寄送</button>
+
+                <div class="text-center mt-3">
+                    <a asp-page="./Login">返回登入</a>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

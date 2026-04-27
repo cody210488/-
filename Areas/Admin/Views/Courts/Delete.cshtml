@@ -1,0 +1,22 @@
+﻿@model 打球啊.Models.Court
+@{
+	ViewData["Title"] = "刪除球場";
+}
+
+<h1>刪除球場</h1>
+
+<h3 class="text-danger">你確定要刪除這個球場嗎?</h3>
+
+<div>
+	<p>名稱 : @Model.Name</p>
+	<p>城市 : @Model.City</p>
+	<p>地區 : @Model.District</p>
+	<p>地址 : @Model.Address</p>
+</div>
+
+<form asp-area="Admin" asp-controller="Courts" asp-action="Delete" method="post">
+	<input type="hidden" asp-for="Id"/>
+
+	<button type="submit" class="btn btn-danger">確定刪除</button>
+	<a asp-action="Index" class="btn btn-secondary">取消</a>
+</Form>

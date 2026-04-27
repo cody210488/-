@@ -1,0 +1,66 @@
+﻿@model 打球啊.Models.Court
+@{
+	ViewData["Title"] = "新增球場";
+}
+
+<h1>新增球場</h1>
+
+<form asp-action="Create" method="post">
+	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+	<div class="mb-3">
+		<label asp-for="Name" class="form-lable">球場名稱</label>
+		<input asp-for="Name" class="form-control"/>
+		<span asp-validation-for="Name" class="text-danger"></span>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="City" calss="form-label">城市</label>
+		<select asp-for="City" id="citySelect" class="form-select">
+			<option value="">請選擇城市</option>
+		</select>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="District" calss="form-label">地區</label>
+		<select asp-for="District" id="districtSelect" class="form-select">
+			<option value="">請先選擇城市</option>
+		</select>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="Address" class="form-lable">地址</label>
+		<input asp-for="Address" class="form-control" />
+		<span asp-validation-for="Address" class="text-danger"></span>
+	</div>
+
+
+	<div class="mb-3">
+		<label asp-for="CourtType" class="form-lable">球場類型</label>
+		<input asp-for="CourtType" class="form-control" />
+		<span asp-validation-for="CourtType" class="text-danger"></span>
+	</div>
+
+	<div class="mb-3">
+
+		<input asp-for="HasLighting" class="form-check-input" />
+		<label asp-for="HasLighting" class="form-check-label">是否有燈光</label>
+	</div>
+
+	<div class="mb-3">
+		<label asp-for="Description" class="form-lable">備註</label>
+		<input asp-for="Description" class="form-control" />
+		<span asp-validation-for="Description" class="text-danger"></span>
+	</div>
+
+	<button type="submit" class="btn btn-primary">儲存</button>
+	<a asp-action="Index" class="btn btn-secondary">返回列表</a>
+</form>
+
+@section Scripts{
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
+<script src="~/js/taiwan-district.js"></script>
+
